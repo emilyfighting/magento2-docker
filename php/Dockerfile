@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
         libpng12-dev \
         libicu-dev \
         libicu52  \
+        libpcre3-dev \
     && docker-php-ext-install iconv \
     && docker-php-ext-install exif \
     && docker-php-ext-install mbstring \

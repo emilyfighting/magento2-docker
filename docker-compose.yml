@@ -31,17 +31,11 @@ php:
         - data
     links:
         - mysql
-        - elasticsearch
         - memcached
     mem_limit: 2000000000
     env_file:
         - .env
 
-elasticsearch:
-    image: elasticsearch
-
 memcached:
     image: memcached
 
-selenium:
-    image: selenium/standalone-chrome-debug
