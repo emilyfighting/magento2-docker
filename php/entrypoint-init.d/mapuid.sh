@@ -8,8 +8,8 @@ set -e
 # This is a work around for permission issues.
 
 if [[ "${UPDATE_UID_GID}" = "yes" ]]; then
-    DOCKER_UID=$(stat -c '%u' /var/www/sylius)
-    DOCKER_GID=$(stat -c '%g' /var/www/sylius)
+    DOCKER_UID=$(stat -c '%u' /var/www/pintushi)
+    DOCKER_GID=$(stat -c '%g' /var/www/pintushi)
 
     echo "Docker: uid = ${DOCKER_UID}, gid = ${DOCKER_GID}"
 

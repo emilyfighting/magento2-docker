@@ -1,7 +1,7 @@
 # Description
 This Docker Compose development environment includes
 
-* PHP 7.0
+* PHP 7.1
 * MariaDB
 * Nginx 
 * Composer
@@ -56,14 +56,14 @@ Enter the php container and create the directory:
 
 ```bash
 docker exec -it $(docker-compose ps -q php) bash
-mkdir /dev/shm/sylius/
-setfacl -R -m u:"www-data":rwX -m u:`whoami`:rwX /dev/shm/sylius/
-setfacl -dR -m u:"www-data":rwX -m u:`whoami`:rwX /dev/shm/sylius/
+mkdir /dev/shm/pintushi/
+setfacl -R -m u:"www-data":rwX -m u:`whoami`:rwX /dev/shm/pintushi/
+setfacl -dR -m u:"www-data":rwX -m u:`whoami`:rwX /dev/shm/pintushi/
 ```
 
 To view the application logs, run the following commands:
 
 ```bash
-tail -f /dev/shm/sylius/app/logs/prod.log
+tail -f /dev/shm/pintushi/app/logs/prod.log
 tail -f
 ```
