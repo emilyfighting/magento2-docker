@@ -1,7 +1,7 @@
 data:
     image: busybox
     volumes:
-        - ${SYLIUS_DIR}:/var/www/sylius
+        - ${PINTUSHI_DIR}:/var/www/pintushi
         - /vendor
         - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
         - ~/.composer:/root/.composer
@@ -20,13 +20,13 @@ mysql:
     image: mariadb
     environment:
         MYSQL_ROOT_PASSWORD: root
-        MYSQL_DATABASE: sylius_dev
-        MYSQL_USER: sylius
-        MYSQL_PASSWORD: sylius
+        MYSQL_DATABASE: pintushi_dev
+        MYSQL_USER: pintushi
+        MYSQL_PASSWORD: pintushi
 
 php:
     build: php
-    working_dir: /var/www/sylius
+    working_dir: /var/www/pintushi
     volumes_from:
         - data
     links:
