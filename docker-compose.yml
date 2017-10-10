@@ -3,8 +3,9 @@ data:
     volumes:
         - ${PINTUSHI_DIR}:/var/www/pintushi
         - /vendor
-        - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+        - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
         - ~/.composer:/root/.composer
+        - ~/.cache/yarn:/usr/local/share/.cache/yarn
         - /tmpfs
 
 nginx:
@@ -33,11 +34,6 @@ php:
         - data
     links:
         - mysql
-        - memcached
     mem_limit: 2000000000
     env_file:
         - .env
-
-memcached:
-    image: memcached
-
