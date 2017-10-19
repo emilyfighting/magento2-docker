@@ -2,7 +2,6 @@ data:
     image: busybox
     volumes:
         - ${PINTUSHI_DIR}:/var/www/pintushi
-        - /vendor
         - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
         - ~/.composer:/root/.composer
         - ~/.cache/yarn:/usr/local/share/.cache/yarn
