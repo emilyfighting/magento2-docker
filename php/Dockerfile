@@ -1,22 +1,30 @@
-FROM php:7.1-fpm
+FROM php:7.1-fpm-jessie
+MAINTAINER vidy videni <vidy.videni@gmail.com>
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_CODENAME jessie
+ENV TZ UTC
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+  && echo $TZ > /etc/timezone \
+  && dpkg-reconfigure -f noninteractive tzdata
 
 RUN \
-  apt-get update && \
-  apt-get install -y \
+  apt-get update && \ 
+  apt-get install -y --no-install-recommends \
   curl \
   wget \
+  net-tools \ 
   git apt-transport-https apt-utils build-essential
 
+# Node
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-RUN apt-get install -y nodejs net-tools
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
-RUN apt-get update &&  apt-get install -y yarn
-RUN yarn config set registry https://registry.npm.taobao.org
+RUN apt-get update &&  apt-get install -y yarn nodejs 
 RUN yarn global add gulp 
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
+# PHP
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -34,18 +42,19 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install opcache \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install gd \
-    && docker-php-ext-install zip
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
+    && docker-php-ext-install zip  \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug
 
 COPY php.ini        /usr/local/etc/php/conf.d/
 COPY default.conf    /usr/local/etc/php-fpm.d/www.conf
 
-ADD entrypoint-init.d /entrypoint-init.d
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Composer
+RUN php -r 'readfile("https://getcomposer.org/installer");' > composer-setup.php \
+  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+  && rm -f composer-setup.php \
+  && chown www-data:www-data /var/www
 
 EXPOSE 9000
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["php-fpm", "-F"]
+ENTRYPOINT ["php-fpm", "-F"]

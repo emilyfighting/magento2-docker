@@ -27,7 +27,7 @@ mysql:
         MYSQL_PASSWORD: pintushi
 
 php:
-    build: php
+    build: videni/php-fpm-node
     working_dir: /var/www/pintushi
     volumes_from:
         - data
