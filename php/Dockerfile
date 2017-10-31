@@ -44,10 +44,11 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd \
     && docker-php-ext-install zip  \
     && pecl install xdebug \
-    && docker-php-ext-enable xdebug
+    && docker-php-ext-enable xdebug \
+    && apt-get autoremove -y
 
 COPY php.ini        /usr/local/etc/php/conf.d/
-COPY default.conf    /usr/local/etc/php-fpm.d/www.conf
+COPY php-fpm.conf    /usr/local/etc/php-fpm.d/www.conf
 
 # Composer
 RUN php -r 'readfile("https://getcomposer.org/installer");' > composer-setup.php \
