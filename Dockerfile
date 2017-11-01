@@ -10,8 +10,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
   && dpkg-reconfigure -f noninteractive tzdata
 
 #change apt source
-ADD sources.list /tmp/sources.list
-RUN cat /tmp/sources.list > /etc/apt/sources.list 
+# ADD sources.list /tmp/sources.list
+# RUN cat /tmp/sources.list > /etc/apt/sources.list 
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
@@ -19,10 +19,10 @@ RUN apt-key adv --fetch-keys http://nginx.org/keys/nginx_signing.key
 
 RUN apt-get update && \ 
   apt-get install -y --no-install-recommends \
-  curl vim \
+  vim \
   wget \
   net-tools \ 
-  git apt-transport-https apt-utils build-essential\
+  git build-essential\
   yarn nodejs 
 
 RUN yarn global add gulp \
