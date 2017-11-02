@@ -26,8 +26,7 @@ RUN apt-get update && \
   yarn nodejs 
 
 RUN yarn global add gulp \
-   && apt-get install -y \
-        nginx supervisor \
+   && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
@@ -46,21 +45,23 @@ RUN yarn global add gulp \
     && docker-php-ext-install gd \
     && docker-php-ext-install zip  \
     && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && apt-get autoremove -y
+    && docker-php-ext-enable xdebug
+
+RUN apt-get install -y nginx supervisor \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && ln -sf /proc/1/fd/1 /var/log/nginx/access.log \
+    && ln -sf /proc/1/fd/2 /var/log/nginx/error.log
+
+
+# Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN rm -rf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* /usr/local/etc/php-fpm.d/*
+ADD nginx/default.conf /etc/nginx/conf.d/
 
 COPY php/php.ini        /usr/local/etc/php/conf.d/
 COPY php/php-fpm.conf    /usr/local/etc/php-fpm.d/www.conf
-
-# Composer
-RUN php -r 'readfile("https://getcomposer.org/installer");' > composer-setup.php \
-  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
-  && rm -f composer-setup.php \
-  && chown www-data:www-data /var/www
-
-RUN rm -rf /etc/nginx/sites-enabled/* /etc/nginx/nginx.conf  /etc/nginx/conf.d/*
-ADD nginx/default.conf /etc/nginx/conf.d/
-
 
 # setup startup script
 ADD nginx.sh /nginx.sh

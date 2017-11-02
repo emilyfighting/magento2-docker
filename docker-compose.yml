@@ -1,4 +1,5 @@
 data:
+    container_name: pintushi-data
     image: busybox
     volumes:
         - ${PINTUSHI_DIR}:/var/www/pintushi
@@ -6,8 +7,9 @@ data:
         - ~/.composer:/root/.composer
         - ~/.cache/yarn:/usr/local/share/.cache/yarn
         - /tmpfs
-        
+
 mysql:
+    container_name: pintushi-mysql
     image: mariadb
     environment:
         MYSQL_ROOT_PASSWORD: root
@@ -15,13 +17,16 @@ mysql:
         MYSQL_USER: pintushi
         MYSQL_PASSWORD: pintushi
 
-php:
-    image: "videni/php-fpm-node"
+app:
+    container_name: pintushi-app
+    image: "videni/php-nginx-fpm"
     working_dir: /var/www/pintushi
     volumes_from:
         - data
     links:
         - mysql
     mem_limit: 2000000000
+    ports:
+      - 8080:80
     env_file:
         - .env

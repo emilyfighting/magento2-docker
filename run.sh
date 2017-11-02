@@ -9,4 +9,6 @@ usermod -u ${DOCKER_UID} www-data 2> /dev/null && {
     groupmod -g ${DOCKER_GID} www-data 2> /dev/null || usermod -a -G ${DOCKER_GID} www-data
 }
 
+chmod -R 777 /tmp
+
 exec supervisord -n
