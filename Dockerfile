@@ -21,7 +21,7 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends \
   vim \
   wget \
-  net-tools \ 
+  net-tools openssh-client \ 
   git build-essential\
   yarn nodejs 
 
