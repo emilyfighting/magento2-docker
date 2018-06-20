@@ -19,7 +19,7 @@ mysql:
 
 app:
     container_name: pintushi-app
-    image: "videni/php-nginx-fpm"
+    build: ./Dockerfile
     working_dir: /var/www/pintushi
     volumes_from:
         - data
@@ -27,6 +27,6 @@ app:
         - mysql
     mem_limit: 2000000000
     ports:
-      - 8080:80
+      - 9000:80
     env_file:
         - .env
