@@ -1,32 +1,29 @@
-data:
-    container_name: pintushi-data
-    image: busybox
-    volumes:
-        - ${PINTUSHI_DIR}:/var/www/pintushi
-        - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
-        - ~/.composer:/root/.composer
-        - ~/.cache/yarn:/usr/local/share/.cache/yarn
-        - /tmpfs
+version: '3.2'
 
-mysql:
-    container_name: pintushi-mysql
-    image: mariadb
-    environment:
-        MYSQL_ROOT_PASSWORD: root
-        MYSQL_DATABASE: pintushi_dev
-        MYSQL_USER: pintushi
-        MYSQL_PASSWORD: pintushi
+services:
+    mysql:
+        container_name: pintushi-mysql
+        image: mariadb
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: pintushi_dev
+            MYSQL_USER: pintushi
+            MYSQL_PASSWORD: pintushi
 
-app:
-    container_name: pintushi-app
-    build: ./Dockerfile
-    working_dir: /var/www/pintushi
-    volumes_from:
-        - data
-    links:
-        - mysql
-    mem_limit: 2000000000
-    ports:
-      - 9000:80
-    env_file:
-        - .env
+    app:
+        container_name: pintushi-app
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        working_dir: /var/www/pintushi
+        volumes:
+            - ${PINTUSHI_DIR}:/var/www/pintushi
+            - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
+            - ~/.composer:/root/.composer
+            - /tmpfs
+        depends_on:
+            - mysql
+        ports:
+          - 9000:80
+        env_file:
+            - .env

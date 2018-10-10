@@ -3,12 +3,14 @@ This Docker Compose development environment includes
 
 * PHP 7.1
 * MariaDB
-* Nginx 
+* Nginx
 * Composer
 
 # Usage
 
-First you need to install Docker and Docker Compose.
+First copy .env.dist as .env and change `PINTUSHI_DIR` and `SSH_PRIVATE_KEY_NAME` environment variables.
+
+Second you need to install Docker and Docker Compose.
 
 ```bash
 cd docker

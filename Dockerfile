@@ -12,9 +12,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
 #change apt source
 # ADD sources.list /tmp/sources.list
 # RUN cat /tmp/sources.list > /etc/apt/sources.list
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
 RUN apt-key adv --fetch-keys http://nginx.org/keys/nginx_signing.key
 
 RUN apt-get update && \
@@ -22,11 +19,9 @@ RUN apt-get update && \
   vim \
   wget \
   net-tools openssh-client \
-  git build-essential\
-  yarn nodejs
+  git build-essential
 
-RUN yarn global add gulp \
-   && apt-get install -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
@@ -36,16 +31,13 @@ RUN yarn global add gulp \
         libpcre3-dev \
     && docker-php-ext-install iconv \
     && docker-php-ext-install exif \
-    && docker-php-ext-install mbstring \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install pdo \
     && docker-php-ext-install intl \
     && docker-php-ext-install opcache \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install gd \
-    && docker-php-ext-install zip  \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug
+    && docker-php-ext-install zip
 
 RUN apt-get install -y nginx supervisor \
     && apt-get clean \
@@ -53,9 +45,8 @@ RUN apt-get install -y nginx supervisor \
     && ln -sf /proc/1/fd/1 /var/log/nginx/access.log \
     && ln -sf /proc/1/fd/2 /var/log/nginx/error.log
 
-
 # Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=1.6.5
 
 RUN rm -rf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* /usr/local/etc/php-fpm.d/*
 ADD nginx/default.conf /etc/nginx/conf.d/
