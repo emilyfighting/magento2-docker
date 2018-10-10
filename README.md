@@ -32,8 +32,7 @@ docker-compose up
 ## 配置pintushi2项目数据库参数
 
 注意是pintushi2项目，而不是本库中的.env文件
-.env
-```
+```.env
 DATABASE_URL="mysql://pintushi:pintushi@pintushi-mysql:3306/pintushi_dev"
 ```
 
