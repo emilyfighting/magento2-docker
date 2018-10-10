@@ -1,71 +1,41 @@
-# Description
+# 介绍
 This Docker Compose development environment includes
 
 * PHP 7.1
 * MariaDB
 * Nginx
-* Composer
+* Composer 1.6.5
 
-# Usage
+# 使用方法
 
-First copy .env.dist as .env and change `PINTUSHI_DIR` and `SSH_PRIVATE_KEY_NAME` environment variables.
-
-Second you need to install Docker and Docker Compose.
-
+## 准备开发环境
+首先拷贝 .env.dist为.env 并设置`PINTUSHI_DIR`，`SSH_PRIVATE_KEY_NAME` 环境变量
+然后，启动容器
 ```bash
 cd docker
 docker-compose up
 ```
 
-Now you have a few options to get started
+## 配置pintushi2项目数据库参数
 
-## Basic
-
-Get the ip of the Nginx container.
-
+注意是pintushi2项目，而不是本库中的.env文件
+.env
 ```
-docker inspect $(docker-compose ps -q nginx) | grep IPAddress
+DATABASE_URL="mysql://pintushi:pintushi@pintushi-mysql:3306/pintushi_dev"
 ```
 
-## Advanced
-
-Run a `dnsdock` container before `docker-compose up`, more info: https://github.com/tonistiigi/dnsdock
-Access the containers from the dns records.
+现在，你可访问http://localhost:9000。
 
 # Troubleshooting
 
-## How to enter a container?
-
-Enter the php container to install composer vendors etc.
+## 如何进入容器？
 
 ```bash
-docker exec -it $(docker-compose ps -q php) bash
+docker exec -it $(docker-compose ps -q pintushi-app) bash
 ```
 
-## The application is too slow.
+## 如何获取nginx的ip地址？
 
-Install composer vendors in the container and symlink them to the application directory.
-Execute inside the php container:
-
-```bash
-mkdir /vendor && ln -sf /vendor ./vendor
 ```
-
-Using Symfony2 inside Vagrant can be slow due to synchronisation delay incurred by NFS.
-You can write the app logs and cache to a folder on the php container.
-
-Enter the php container and create the directory:
-
-```bash
-docker exec -it $(docker-compose ps -q php) bash
-mkdir /dev/shm/pintushi/
-setfacl -R -m u:"www-data":rwX -m u:`whoami`:rwX /dev/shm/pintushi/
-setfacl -dR -m u:"www-data":rwX -m u:`whoami`:rwX /dev/shm/pintushi/
-```
-
-To view the application logs, run the following commands:
-
-```bash
-tail -f /dev/shm/pintushi/app/logs/prod.log
-tail -f
+docker inspect $(docker-compose ps -q nginx) | grep IPAddress
 ```
