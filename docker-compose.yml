@@ -10,14 +10,14 @@ services:
             MYSQL_USER: pintushi
             MYSQL_PASSWORD: pintushi
 
-    app:
-        container_name: pintushi-app
+    shop:
+        container_name: pintushi-shop
         build:
             context: .
             dockerfile: ./Dockerfile
         working_dir: /var/www/pintushi
         volumes:
-            - ${PINTUSHI_DIR}:/var/www/pintushi
+            - ${PINTUSHI_SHOP_DIR}:/var/www/pintushi
             - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
             - ~/.composer:/root/.composer
             - /tmpfs
@@ -25,5 +25,23 @@ services:
             - mysql
         ports:
           - 9000:80
+        env_file:
+            - .env
+
+    admin:
+        container_name: pintushi-admin
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        working_dir: /var/www/pintushi
+        volumes:
+            - ${PINTUSHI_ADMIN_DIR}:/var/www/pintushi
+            - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
+            - ~/.composer:/root/.composer
+            - /tmpfs
+        depends_on:
+            - mysql
+        ports:
+          - 9090:80
         env_file:
             - .env
