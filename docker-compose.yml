@@ -1,14 +1,13 @@
 version: '3.2'
 
 services:
-    mysql:
-        container_name: pintushi-mysql
-        image: mariadb
+    db:
+        container_name: pintushi-db
+        image: postgres:11-alpine
+        restart: always
         environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: pintushi_dev
-            MYSQL_USER: pintushi
-            MYSQL_PASSWORD: pintushi
+            POSTGRES_USER: pintushi
+            POSTGRES_PASSWORD: pintushi
 
     application:
         container_name: pintushi-application
@@ -17,12 +16,12 @@ services:
             dockerfile: ./Dockerfile
         working_dir: /var/www/pintushi
         volumes:
-            - ${PINTUSHI_ADMIN_DIR}:/var/www/pintushi
+            - ${PINTUSHI_DIR}:/var/www/pintushi
             - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
             - ~/.composer:/root/.composer
             - /tmpfs
         depends_on:
-            - mysql
+            - db
         ports:
           - 9090:80
         env_file:

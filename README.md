@@ -12,26 +12,26 @@ This Docker Compose development environment includes
 
 首先拷贝.env.dist为.env并设置`PINTUSHI_DIR`，`SSH_PRIVATE_KEY_NAME` 环境变量
 
-PINTUSHI_DIR变量为pintushi2源代码的路径，可为相对路径。假设有如下目录结构
+PINTUSHI_DIR变量为pintushi--application源代码的路径，可为相对路径。假设有如下目录结构
 ```
 www
   docker
-  pintushi2
+  pintushi--application
 ```
-那么设置PINTUSHI_DIR=../pintushi2
+那么设置PINTUSHI_DIR=../pintushi-application
 
-SSH_PRIVATE_KEY_NAME为私钥文件名，比如你私钥路径为`~/.ssh/id_rsa`, 那么设置
+SSH_PRIVATE_KEY_NAME为私钥文件名，比如你私钥路径为`~/.ssh/git`, 那么设置
 ```
-SSH_PRIVATE_KEY_NAME=id_rsa
+SSH_PRIVATE_KEY_NAME=git
 ```
 然后，启动容器
 ```bash
 cd docker
 docker-compose up
 ```
-## 配置pintushi2项目数据库参数
+## 配置pintushi--application项目数据库参数
 
-注意是pintushi2项目，而不是本库中的.env文件
+注意是pintushi-application项目，而不是本库中的.env文件
 ```.env
 DATABASE_URL="mysql://pintushi:pintushi@pintushi-mysql:3306/pintushi_dev"
 ```
