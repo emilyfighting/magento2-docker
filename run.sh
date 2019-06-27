@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 DOCKER_UID=$(stat -c '%u' /var/www/)
 DOCKER_GID=$(stat -c '%g' /var/www/)
