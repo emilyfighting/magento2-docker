@@ -17,7 +17,7 @@ services:
         working_dir: /var/www/pintushi
         volumes:
             - ${PINTUSHI_DIR}:/var/www/pintushi
-            - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/${SSH_PRIVATE_KEY_NAME}:ro
+            - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/git:ro
             - ~/.composer:/root/.composer
             - /tmpfs
         depends_on:
