@@ -65,4 +65,4 @@ ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # ports
 EXPOSE 80
 
-ENTRYPOINT ["sh", "/run.sh"]
+ENTRYPOINT ["/run.sh"]

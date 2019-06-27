@@ -15,4 +15,4 @@ ssh-add /root/.ssh/git
 
 chmod -R 777 /tmp
 
-exec supervisord -n
+exec supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
