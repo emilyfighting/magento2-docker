@@ -1,28 +1,42 @@
 version: '3.2'
 
 services:
-    db:
-        container_name: pintushi-db
-        image: postgres:11-alpine
-        restart: always
-        environment:
-            POSTGRES_USER: pintushi
-            POSTGRES_PASSWORD: pintushi
-
-    application:
-        container_name: pintushi-application
+    app:
         build:
             context: .
             dockerfile: ./Dockerfile
-        working_dir: /var/www/pintushi
+        working_dir: /var/www/app
         volumes:
-            - ${PINTUSHI_DIR}:/var/www/pintushi
-            - ~/.ssh/${SSH_PRIVATE_KEY_NAME}:/root/.ssh/git:ro
+            - ${APP_DIR}:/var/www/app
             - ~/.composer:/root/.composer
             - /tmpfs
         depends_on:
             - db
+            - elasticsearch
         ports:
           - 9090:80
         env_file:
             - .env
+
+    elasticsearch:
+        image: elasticsearch:7.8.0
+        ports:
+            - 9200:9200
+            - 9300:9300
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        environment: 
+            - 'discovery.type=single-node'
+        volumes:
+            - ./var/elasticsearch:/usr/share/elasticsearch/data
+
+    db:
+        image: mysql:latest
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./var/mysql:/var/lib/mysql
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes

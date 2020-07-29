@@ -1,5 +1,5 @@
-FROM php:7.2-fpm-alpine
-MAINTAINER vidy videni <vidy.videni@gmail.com>
+FROM php:7.4-fpm-alpine
+LABEL Author="vidy videni <vidy.videni@gmail.com>"
 
 ENV TZ UTC
 
@@ -14,53 +14,93 @@ RUN apk add --update --no-cache \
   vim wget \
   net-tools openssh-client git
 
-# intl, zip, opcache
-RUN apk add --update --no-cache libintl icu icu-dev zlib-dev && \
-    docker-php-ext-install -j"$(getconf _NPROCESSORS_ONLN)" intl opcache zip
+# Add Build Dependencies
+RUN apk add --no-cache  \
+    curl \
+    g++ \
+    gcc \
+    gnupg \
+    autoconf \
+    libgcc \
+    make
 
-# gd, iconv, exif
-RUN apk add --update --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
-    docker-php-ext-configure gd \
-      --with-gd \
-      --with-freetype-dir=/usr/include/  \
-      --with-png-dir=/usr/include/  \
-      --with-jpeg-dir=/usr/include/  && \
-    docker-php-ext-install -j"$(getconf _NPROCESSORS_ONLN)" gd iconv exif
+# install the PHP extensions we need
+RUN apk add --no-cache \
+		coreutils \
+		freetype-dev \
+		libjpeg-turbo-dev \
+		libpng-dev \
+		libzip-dev \
+		jpeg-dev \
+		icu-dev \
+		zlib-dev \
+		curl-dev \
+		imap-dev \
+		libxslt-dev libxml2-dev \
+		postgresql-dev \
+        libgcrypt-dev \
+		oniguruma-dev \
+	; \
+	\
+	docker-php-ext-configure gd --with-freetype --with-jpeg \
+	docker-php-ext-configure gd intl imap \
+	; \
+	docker-php-ext-install -j "$(nproc)" \
+		gd soap imap bcmath mbstring iconv curl sockets \
+		opcache \
+		pdo_pgsql \
+		xsl \
+		exif \
+		mysqli pdo pdo_mysql \
+		intl \
+		zip
 
-# pdo_pgsql
-RUN apk add --update --no-cache postgresql-dev && \
-    docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
-    docker-php-ext-install -j"$(getconf _NPROCESSORS_ONLN)"  pdo_pgsql pdo
-
+# set recommended PHP.ini settings
+# see https://secure.php.net/manual/en/opcache.installation.php
+RUN { \
+		echo 'opcache.memory_consumption=128'; \
+		echo 'opcache.interned_strings_buffer=8'; \
+		echo 'opcache.max_accelerated_files=4000'; \
+		echo 'opcache.revalidate_freq=60'; \
+		echo 'opcache.fast_shutdown=1'; \
+	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+  
 # nginx
 RUN apk add --update --no-cache openssl curl ca-certificates && \
     printf "%s%s%s\n" \
-    "http://nginx.org/packages/alpine/v" \
+    "http://nginx.org/packages/alpine/" \
     `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
     "/main" \
     | tee -a /etc/apk/repositories && \
     curl -o /etc/apk/keys/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub
 
-RUN apk add --update --no-cache nginx supervisor && \
-    rm -rf /tmp/* /var/tmp/*  && \
+RUN apk add --update --no-cache nginx supervisor 
+
+# Clear unused dependencies and cached files.
+RUN rm -rf /tmp/* /var/tmp/*  && \
     ln -sf /proc/1/fd/1 /var/log/nginx/access.log  && \
     ln -sf /proc/1/fd/2 /var/log/nginx/error.log
 
 # Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=1.6.5
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN rm -rf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* /usr/local/etc/php-fpm.d/*
-ADD nginx/default.conf /etc/nginx/conf.d/
+ADD ./nginx/default.conf /etc/nginx/conf.d/
 
-COPY php/php.ini        /usr/local/etc/php/conf.d/
-COPY php/php-fpm.conf    /usr/local/etc/php-fpm.d/www.conf
+COPY ./php/php.ini        /usr/local/etc/php/conf.d/
+COPY ./php/php-fpm.conf    /usr/local/etc/php-fpm.d/www.conf
 
 # setup startup script
-ADD nginx.sh /nginx.sh
-ADD php-fpm.sh /php-fpm.sh
-ADD run.sh /run.sh
+RUN mkdir -p /run/nginx /var/tmp/nginx/
+ADD ./nginx.sh /nginx.sh
+ADD ./php-fpm.sh /php-fpm.sh
+ADD ./run.sh /run.sh
 RUN chmod 755 /*.sh
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+ENV PATH="./vendor/bin:$PATH"
+
+WORKDIR /var/www/html
 
 # ports
 EXPOSE 80
