@@ -1,4 +1,7 @@
 # 介绍
+
+A generic PHP enviroment on Docker
+
 This Docker Compose development environment includes
 
 * PHP 7.4
@@ -31,7 +34,7 @@ docker-compose up
 ## 如何进入容器？
 
 ```bash
-docker exec -it $(docker-compose ps -q app-app) sh
+docker exec -it $(docker-compose ps -q php-docker_app_1) sh
 ```
 
 ## 如何获取nginx的ip地址？
