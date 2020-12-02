@@ -12,7 +12,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # tools
 RUN apk add --update --no-cache \
   vim wget \
-  net-tools openssh-client git
+  net-tools openssh-client git procps
 
 # Add Build Dependencies
 RUN apk add --no-cache  \
@@ -29,6 +29,7 @@ RUN apk add --no-cache \
 		coreutils \
 		freetype-dev \
 		libjpeg-turbo-dev \
+		libjpeg-turbo \
 		libpng-dev \
 		libzip-dev \
 		jpeg-dev \
@@ -39,21 +40,21 @@ RUN apk add --no-cache \
 		libxslt-dev libxml2-dev \
 		postgresql-dev \
         libgcrypt-dev \
-		oniguruma-dev \
-	; \
-	\
-	docker-php-ext-configure gd --with-freetype --with-jpeg \
-	docker-php-ext-configure gd intl imap \
-	; \
-	docker-php-ext-install -j "$(nproc)" \
-		gd soap imap bcmath mbstring iconv curl sockets \
-		opcache \
-		pdo_pgsql \
-		xsl \
-		exif \
-		mysqli pdo pdo_mysql \
-		intl \
-		zip
+		oniguruma-dev
+
+RUN	docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN	docker-php-ext-install gd
+RUN	docker-php-ext-configure intl
+RUN	docker-php-ext-configure imap
+run docker-php-ext-configure zip
+
+RUN docker-php-ext-install -j "$(nproc)" soap imap bcmath mbstring iconv curl sockets
+RUN docker-php-ext-install -j "$(nproc)" opcache
+RUN docker-php-ext-install -j "$(nproc)" xsl
+RUN docker-php-ext-install -j "$(nproc)" exif
+RUN docker-php-ext-install -j "$(nproc)" mysqli pdo pdo_mysql
+RUN docker-php-ext-install -j "$(nproc)" intl
+RUN docker-php-ext-install -j "$(nproc)" zip
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -85,7 +86,7 @@ RUN rm -rf /tmp/* /var/tmp/*  && \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN rm -rf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* /usr/local/etc/php-fpm.d/*
-ADD ./nginx/default.conf /etc/nginx/conf.d/
+ADD nginx/default.conf /etc/nginx/conf.d/
 
 COPY ./php/php.ini        /usr/local/etc/php/conf.d/
 COPY ./php/php-fpm.conf    /usr/local/etc/php-fpm.d/www.conf
