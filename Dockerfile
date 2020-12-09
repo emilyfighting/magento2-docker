@@ -83,8 +83,9 @@ RUN rm -rf /tmp/* /var/tmp/*  && \
     ln -sf /proc/1/fd/2 /var/log/nginx/error.log
 
 # Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
+RUN php -r 'readfile("https://getcomposer.org/installer");' > composer-setup.php \
+  && php composer-setup.php --version=1.10.19 --install-dir=/usr/local/bin --filename=composer \
+  && rm -f composer-setup.php
 RUN rm -rf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* /usr/local/etc/php-fpm.d/*
 ADD nginx/default.conf /etc/nginx/conf.d/
 
