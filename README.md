@@ -28,6 +28,10 @@ www
 cd docker
 docker-compose up
 ```
+or 
+```
+make start
+```
 
 # Troubleshooting
 

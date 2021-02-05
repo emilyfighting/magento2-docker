@@ -14,7 +14,7 @@ services:
     app:
         build:
             context: .
-            dockerfile: ./2.3/Dockerfile
+            dockerfile: ./2.4/Dockerfile
         working_dir: /var/www/app
         container_name: magento2-app
         volumes:
