@@ -39,10 +39,15 @@ RUN apk add --no-cache \
 		imap-dev \
 		libxslt-dev libxml2-dev \
 		postgresql-dev \
-        libgcrypt-dev \
+    libgcrypt-dev \
 		oniguruma-dev
 
-RUN	docker-php-ext-configure gd
+RUN docker-php-ext-configure gd \
+    --with-gd \
+    --with-jpeg-dir \
+    --with-png-dir \
+    --with-zlib-dir \
+    --with-freetype-dir 
 RUN	docker-php-ext-install gd
 RUN	docker-php-ext-configure intl
 RUN	docker-php-ext-configure imap

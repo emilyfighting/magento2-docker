@@ -33,6 +33,10 @@ or
 make start
 ```
 
+## Build image
+```
+
+```
 # Troubleshooting
 
 ## 如何进入容器？

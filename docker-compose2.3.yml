@@ -1,0 +1,56 @@
+version: '3.2'
+
+volumes:
+  db:
+    driver: local
+    labels:
+      project: magento2
+  es:
+    driver: local
+    labels:
+      project: magento2
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: ./2.3/Dockerfile
+        working_dir: /var/www/app
+        container_name: magento2-app
+        volumes:
+            - ${APP_DIR}:/var/www/app
+            - ~/.composer:/root/.composer
+            - /tmpfs
+        depends_on:
+            - db
+            - elasticsearch
+        ports:
+          - 80:80
+        env_file:
+            - .env
+
+    elasticsearch:
+        image: elasticsearch:7.6.2
+        container_name: magento2-es
+        ports:
+            - 9200:9200
+            - 9300:9300
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        environment: 
+            - 'discovery.type=single-node'
+        volumes:
+            - es:/usr/share/elasticsearch/data
+
+    db:
+        image: mysql:latest
+        container_name: magento2-mysql
+        ports:
+            - "3306:3306"
+        volumes:
+            - db:/var/lib/mysql
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+            - MYSQL_DATABASE=magento2
