@@ -11,27 +11,38 @@ volumes:
       project: magento2
 
 services:
-    app:
+    magento24-app:
         build:
             context: .
             dockerfile: ./2.4/Dockerfile
+        # image: magento2.4-docker:1.1.1
         working_dir: /var/www/app
-        container_name: magento2-app
+        container_name: magento-app
+        hostname: magento.local
+        networks:
+            magento:
+                aliases:
+                - magento.local
         volumes:
             - ${APP_DIR}:/var/www/app
             - ~/.composer:/root/.composer
             - /tmpfs
         depends_on:
-            - db
-            - elasticsearch
+            - magento24-db
+            - magento24-elasticsearch
         ports:
           - 80:80
         env_file:
             - .env
 
-    elasticsearch:
+    magento24-elasticsearch:
         image: elasticsearch:7.8.0
-        container_name: magento2-es
+        container_name: magento-es
+        hostname: es.magento.local
+        networks:
+            magento:
+                aliases:
+                - es.magento.local
         ports:
             - 9200:9200
             - 9300:9300
@@ -44,9 +55,14 @@ services:
         volumes:
             - es:/usr/share/elasticsearch/data
 
-    db:
+    magento24-db:
         image: mysql:latest
-        container_name: magento2-mysql
+        container_name: magento-mysql
+        hostname: db.magento.local
+        networks:
+            magento:
+                aliases:
+                - db.magento.local
         ports:
             - "3306:3306"
         volumes:
@@ -54,3 +70,7 @@ services:
         environment:
             - MYSQL_ALLOW_EMPTY_PASSWORD=yes
             - MYSQL_DATABASE=magento2
+
+networks:
+  magento:
+    driver: bridge            

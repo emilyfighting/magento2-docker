@@ -54,11 +54,11 @@ docker inspect $(docker-compose ps -q nginx) | grep IPAddress
 # Quick install Magento2
 
 ```
-bin/magento setup:install --base-url=http://magento2-app/ \
---db-host=magento2-mysql --db-name=magento2 --db-user=root --db-password='' \
+bin/magento setup:install --base-url=http://magento.local/ \
+--db-host=db.magento.local --db-name=magento2 --db-user=root --db-password='' \
 --admin-firstname=Magento --admin-lastname=User --admin-email=user@example.com \
 --admin-user=admin --admin-password=admin123 --language=en_GB \
 --currency=GBP --timezone=Europe/London --use-rewrites=1 \
---search-engine=elasticsearch7 --elasticsearch-host=magento2-es \
+--search-engine=elasticsearch7 --elasticsearch-host=es.magento.local \
 --elasticsearch-port=9200 --allow-parallel-generation
 ```

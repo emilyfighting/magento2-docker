@@ -11,27 +11,29 @@ volumes:
       project: magento2
 
 services:
-    app:
+    magento23-app:
         build:
             context: .
             dockerfile: ./2.3/Dockerfile
         working_dir: /var/www/app
         container_name: magento2-app
+        hostname: magento.local
         volumes:
             - ${APP_DIR}:/var/www/app
             - ~/.composer:/root/.composer
             - /tmpfs
         depends_on:
-            - db
-            - elasticsearch
+            - magento23-db
+            - magento23-elasticsearch
         ports:
           - 80:80
         env_file:
             - .env
 
-    elasticsearch:
+    magento23-elasticsearch:
         image: elasticsearch:7.6.2
         container_name: magento2-es
+        hostname: es.magento.local
         ports:
             - 9200:9200
             - 9300:9300
@@ -44,9 +46,10 @@ services:
         volumes:
             - es:/usr/share/elasticsearch/data
 
-    db:
+    magento24-db:
         image: mysql:latest
         container_name: magento2-mysql
+        hostname: db.magento.local
         ports:
             - "3306:3306"
         volumes:

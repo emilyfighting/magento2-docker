@@ -56,6 +56,10 @@ RUN docker-php-ext-install -j "$(nproc)" mysqli pdo pdo_mysql
 RUN docker-php-ext-install -j "$(nproc)" intl
 RUN docker-php-ext-install -j "$(nproc)" zip
 
+RUN curl -sSfL https://github.com/tideways/php-xhprof-extension/releases/download/v5.0.2/tideways-xhprof-5.0.2-x86_64.tar.gz | tar zx \
+  && cp ./tideways_xhprof-5.0.2/tideways_xhprof-7.4.so $(php-config --extension-dir) \
+  && rm -rf ./tideways_xhprof-5.0.2
+
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 # RUN { \
@@ -84,7 +88,7 @@ RUN rm -rf /tmp/* /var/tmp/*  && \
 
 # Composer
 RUN php -r 'readfile("https://getcomposer.org/installer");' > composer-setup.php \
-  && php composer-setup.php --version=1.10.19 --install-dir=/usr/local/bin --filename=composer \
+  && php composer-setup.php --version=2.0.13 --install-dir=/usr/local/bin --filename=composer \
   && rm -f composer-setup.php
 RUN rm -rf /etc/nginx/sites-enabled/* /etc/nginx/conf.d/* /usr/local/etc/php-fpm.d/*
 ADD nginx/default.conf /etc/nginx/conf.d/
